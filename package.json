@@ -1,0 +1,26 @@
+{
+  "name": "pi-no-redundant-cd",
+  "version": "0.1.0",
+  "description": "Pi extension: stop coding agents prefixing bash calls with `cd <the directory they are already in> &&`. Blocks the first one with a reason, strips the rest.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Jorge Walendowsky Filho",
+  "keywords": ["pi-package", "pi", "pi-extension", "coding-agent", "tokens"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwalendowsky/pi-no-redundant-cd.git"
+  },
+  "files": ["extensions/index.ts", "extensions/rule.ts", "README.md", "CHANGELOG.md", "LICENSE"],
+  "pi": {
+    "extensions": ["./extensions/index.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "scripts": {
+    "test": "node --test extensions/*.test.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
