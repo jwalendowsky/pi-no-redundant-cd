@@ -5,20 +5,36 @@
   "type": "module",
   "license": "MIT",
   "author": "Jorge Walendowsky Filho",
-  "keywords": ["pi-package", "pi", "pi-extension", "coding-agent", "tokens"],
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "coding-agent",
+    "tokens"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jwalendowsky/pi-no-redundant-cd.git"
   },
-  "files": ["extensions/index.ts", "extensions/rule.ts", "README.md", "CHANGELOG.md", "LICENSE"],
+  "files": [
+    "extensions/index.ts",
+    "extensions/rule.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "scripts/estimate-savings.mjs"
+  ],
   "pi": {
-    "extensions": ["./extensions/index.ts"]
+    "extensions": [
+      "./extensions/index.ts"
+    ]
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*"
   },
   "scripts": {
-    "test": "node --test extensions/*.test.ts"
+    "test": "node --test extensions/*.test.ts scripts/*.test.mjs",
+    "estimate": "node scripts/estimate-savings.mjs"
   },
   "engines": {
     "node": ">=22.18"

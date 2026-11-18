@@ -10,6 +10,46 @@ helps only partly. Across about 18,000 bash calls in one project's sessions,
 48% started with a redundant `cd`; after an `AGENTS.md` rule against it, 30%
 still did, and one agent run used it on 54 of 54 calls.
 
+## What it saves
+
+Measured with `scripts/estimate-savings.mjs` (below) on 492 recorded pi
+sessions: 39,006 model requests and 29,808 bash calls, over three months and
+about 20 models.
+
+| | Recorded | Redundant `cd` (est.) | Share |
+|---|---:|---:|---:|
+| Bash calls | 29,808 | 13,318 | **44.7%** |
+| Output tokens | 20.9 M | 254 k | **1.21%** |
+| Input tokens (uncached) | 1,594 M | 12.1 M | **0.76%** |
+| Cache-read tokens | 4,184 M | 18.5 M | **0.44%** |
+| Cache-write tokens | 49.9 M | 88 k | **0.18%** |
+| Cost (USD, at each request's own prices) | $728.27 | $1.19 | **0.16%** |
+
+The share is similar in each project: 1.0–1.3% of output tokens, 0.1–0.7% of
+input.
+
+In short, nearly half of all bash calls carried the prefix, but it is a small
+share of tokens and cost. The main gains are commands you can read at a glance
+and an agent that stops repeating itself, not a lower bill. With the extension
+installed, a session pays for at most one prefixed call (the refused one) plus
+a one-line refusal.
+
+### Measure your own sessions
+
+```sh
+node scripts/estimate-savings.mjs                 # all of ~/.pi/agent/sessions
+node scripts/estimate-savings.mjs <dir|file>...   # specific sessions
+node scripts/estimate-savings.mjs --json          # machine-readable
+```
+
+For each model request, the script counts the prefix text the model wrote
+(output). It then adds every earlier prefix in the same context to each later
+request's prompt, split across fresh input, cache read and cache write in the
+same proportion that request was billed. A compaction or context edit resets
+that running total. Tokens are estimated as characters ÷ 4. Run it on sessions
+from before you installed the extension; afterwards there is little left to
+count.
+
 ## What it does
 
 - The **first** bash call in a session that starts with a redundant `cd` is
@@ -51,7 +91,7 @@ command does.
 ## Develop
 
 ```sh
-npm test    # node --test, no dependencies
+npm test    # node --test, no dependencies (extension and estimator)
 ```
 
 ## License
