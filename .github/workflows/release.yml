@@ -3,9 +3,15 @@ name: release
 on:
   push:
     branches: [main]
-  # Lets a failed publish be re-run from the Actions tab without an empty
-  # commit. Safe: release-please is idempotent.
+  # Lets a failed or skipped publish be re-run from the Actions tab without an
+  # empty commit. Set publish=true when package.json is already released (tag
+  # exists, npm missing it). release-please itself is idempotent.
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish package.json's version even if no new release was created"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -27,7 +33,8 @@ jobs:
 
   publish:
     needs: release-please
-    if: needs.release-please.outputs.released == 'true'
+    # workflow_dispatch inputs are null on push events, so compare to true.
+    if: needs.release-please.outputs.released == 'true' || inputs.publish
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,6 +49,14 @@ jobs:
           node-version: 24.x
       # No dependencies to install: the extension uses node: built-ins only.
       - run: npm test
+      # Guard the manual path: never re-publish a version npm already has.
+      - run: |
+          have=$(npm view "$npm_package_name" version 2>/dev/null || echo none)
+          if [ "$have" = "$npm_package_version" ]; then
+            echo "::error::npm already has $have; refusing to publish"
+            exit 1
+          fi
+          echo "publishing $npm_package_version (npm has $have)"
       # No token: npm exchanges the OIDC id-token for publish rights
       # (trusted publishing) and signs a provenance attestation. Requires the
       # one-time `npm trust github` in CONTRIBUTING.md.
