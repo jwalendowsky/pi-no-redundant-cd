@@ -1,0 +1,44 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # Opens (or updates) a "chore: release x.y.z" PR from conventional commits.
+  # Merging that PR tags the repo and creates the GitHub release.
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.release_created }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance / trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          registry-url: https://registry.npmjs.org
+      # No dependencies to install: the extension uses node: built-ins only.
+      - run: npm test
+      - run: npm publish
+        env:
+          # Only needed until npm trusted publishing is configured for the
+          # package (see CONTRIBUTING.md). Then this secret can be deleted.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

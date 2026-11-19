@@ -1,5 +1,8 @@
 # pi-no-redundant-cd
 
+[![ci](https://github.com/jwalendowsky/pi-no-redundant-cd/actions/workflows/ci.yml/badge.svg)](https://github.com/jwalendowsky/pi-no-redundant-cd/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/pi-no-redundant-cd.svg)](https://www.npmjs.com/package/pi-no-redundant-cd)
+
 A [pi](https://pi.dev) extension that stops coding agents from prefixing bash
 calls with `cd <the directory they are already in> &&`.
 
@@ -93,6 +96,10 @@ command does.
 ```sh
 npm test    # node --test, no dependencies (extension and estimator)
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are released. In short:
+commits follow Conventional Commits, and release-please opens the version-bump
+PR; merging it tags the repo and publishes to npm.
 
 ## License
 

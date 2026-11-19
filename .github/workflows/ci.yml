@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # No Windows: the tests use POSIX absolute paths and create symlinks,
+        # which needs admin rights there. The feature targets pi's bash tool.
+        os: [ubuntu-latest, macos-latest]
+        node: [22.x, 24.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+      # Catches a `files` mistake that would silently ship a broken tarball.
+      - run: npm pack --dry-run

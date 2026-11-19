@@ -1,0 +1,40 @@
+name: Command not handled
+description: A redundant or non-redundant `cd` is handled wrongly
+labels: [bug]
+body:
+  - type: textarea
+    id: command
+    attributes:
+      label: Command the agent ran
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: cwd
+    attributes:
+      label: Session working directory
+    validations:
+      required: true
+  - type: dropdown
+    id: expected
+    attributes:
+      label: Expected
+      options: [blocked, stripped, left alone]
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+    validations:
+      required: true
+  - type: input
+    id: pi
+    attributes:
+      label: pi version (`pi --version`)
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS

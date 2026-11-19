@@ -16,6 +16,11 @@
     "type": "git",
     "url": "git+https://github.com/jwalendowsky/pi-no-redundant-cd.git"
   },
+  "homepage": "https://github.com/jwalendowsky/pi-no-redundant-cd#readme",
+  "bugs": "https://github.com/jwalendowsky/pi-no-redundant-cd/issues",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "extensions/index.ts",
     "extensions/rule.ts",
