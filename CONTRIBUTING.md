@@ -45,9 +45,9 @@ Releases are automated with
 3. Merging that PR tags `vX.Y.Z`, creates the GitHub release, and the same
    workflow publishes to npm.
 
-Nobody edits the version by hand. `CHANGELOG.md` is generated; the version
-heading format (`## [0.1.0] - date`) is what pi reads to show "Extension
-Updates" after an upgrade, so keep it.
+Nobody edits the version by hand. `CHANGELOG.md` is generated; release-please's
+heading format (`## [1.2.0](compare-link) (date)`) is parsed by pi to show
+"Extension Updates" after an upgrade, so keep it.
 
 ### One-time npm setup
 
@@ -69,9 +69,22 @@ The workflow file name must be the bare `release.yml`, not a path. If it is
 missing or misnamed, the publish job fails with an authentication error while
 everything else stays green.
 
-Until this is set up, a release PR can still be merged: the tag and GitHub
-release are created, and the publish job fails. Publish that version by hand
-with `npm publish`, or re-run the job after running `npm trust`.
+### When a publish fails
+
+A release PR can be merged while publishing is broken (no trusted publisher
+configured, npm outage, a revoked credential). That leaves a git tag and a
+GitHub release with no matching npm version. Do not add an empty commit — the
+version is already tagged, so release-please has nothing new to release.
+
+Re-run the workflow from the Actions tab with **publish** checked, or:
+
+```sh
+gh workflow run release.yml --ref main -f publish=true
+```
+
+The publish job skips itself when npm already has `package.json`'s version, so
+this is safe to re-run. After publishing, give npm up to a minute before
+`npm view` reports the new version; the registry read replicas lag.
 
 ## What gets shipped
 
