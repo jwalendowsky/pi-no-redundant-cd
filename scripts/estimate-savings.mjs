@@ -36,7 +36,7 @@ function canonical(path) {
   }
 }
 
-function redundantPrefix(command, cwd) {
+export function redundantPrefix(command, cwd) {
   const m = command.match(LEADING_CD);
   if (!m) return "";
   let target = m[1] ?? m[2] ?? m[3];
