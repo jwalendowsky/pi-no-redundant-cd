@@ -17,7 +17,7 @@ jobs:
       released: ${{ steps.release.outputs.release_created }}
     steps:
       - id: release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
@@ -28,17 +28,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # npm provenance / trusted publishing
+      id-token: write # OIDC: npm trusted publishing + provenance
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      # No `registry-url`: it writes an .npmrc with a NODE_AUTH_TOKEN
+      # placeholder, which conflicts with OIDC auth. The default registry is
+      # already registry.npmjs.org.
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
-          registry-url: https://registry.npmjs.org
       # No dependencies to install: the extension uses node: built-ins only.
       - run: npm test
+      # No token: npm exchanges the OIDC id-token for publish rights
+      # (trusted publishing) and signs a provenance attestation. Requires the
+      # one-time `npm trust github` in CONTRIBUTING.md.
       - run: npm publish
-        env:
-          # Only needed until npm trusted publishing is configured for the
-          # package (see CONTRIBUTING.md). Then this secret can be deleted.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

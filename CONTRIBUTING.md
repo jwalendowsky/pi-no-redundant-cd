@@ -51,26 +51,27 @@ Updates" after an upgrade, so keep it.
 
 ### One-time npm setup
 
-Publishing needs a credential. Prefer
-[trusted publishing](https://docs.npmjs.com/trusted-publishers) (no long-lived
-token):
+Publishing uses
+[trusted publishing](https://docs.npmjs.com/trusted-publishers): npm exchanges
+the workflow's OIDC token for publish rights, so no long-lived token exists and
+every release gets a provenance attestation. Run this once from a machine
+logged in to npm as a package owner:
 
 ```sh
-# after the package exists on npm (first publish is manual):
-# npmjs.com → package → Settings → Trusted publishing → GitHub Actions
-#   repo: jwalendowsky/pi-no-redundant-cd, workflow: release.yml
+npm trust github pi-no-redundant-cd \
+  --file release.yml \
+  --repo jwalendowsky/pi-no-redundant-cd \
+  --allow-publish
+npm trust list pi-no-redundant-cd   # verify
 ```
 
-Then delete the `NPM_TOKEN` secret and the `NODE_AUTH_TOKEN` env from
-`.github/workflows/release.yml`. Until then, add a granular npm token with
-publish rights as the `NPM_TOKEN` repository secret.
+The workflow file name must be the bare `release.yml`, not a path. If it is
+missing or misnamed, the publish job fails with an authentication error while
+everything else stays green.
 
-First publish of a brand-new name has to happen once from a machine:
-
-```sh
-npm login
-npm publish
-```
+Until this is set up, a release PR can still be merged: the tag and GitHub
+release are created, and the publish job fails. Publish that version by hand
+with `npm publish`, or re-run the job after running `npm trust`.
 
 ## What gets shipped
 
