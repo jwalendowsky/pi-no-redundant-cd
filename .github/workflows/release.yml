@@ -3,6 +3,9 @@ name: release
 on:
   push:
     branches: [main]
+  # Lets a failed publish be re-run from the Actions tab without an empty
+  # commit. Safe: release-please is idempotent.
+  workflow_dispatch:
 
 permissions:
   contents: write
