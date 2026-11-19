@@ -1,6 +1,6 @@
 {
   "name": "pi-no-redundant-cd",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Pi extension: stop coding agents prefixing bash calls with `cd <the directory they are already in> &&`. Blocks the first one with a reason, strips the rest.",
   "type": "module",
   "license": "MIT",
